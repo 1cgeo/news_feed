@@ -10,6 +10,8 @@ from datetime import datetime
 from news_feed.timer import Timer
 
 class NewsFeedDock(QtWidgets.QDockWidget):
+
+    dataVersion = 'v4'
     
     def __init__(self, 
             parent=None
@@ -57,11 +59,11 @@ class NewsFeedDock(QtWidgets.QDockWidget):
     def applyFilters(self, filterId, state):
         filters = self.getFilters()
         filters[filterId] = state
-        self.setSettingsVariable('newsFeed:filters', json.dumps(filters))
+        self.setSettingsVariable('newsFeed:filters:{}'.format(self.dataVersion), json.dumps(filters))
         self.fetchData()
 
     def getFilters(self):
-        filters = self.getSettingsVariable('newsFeed:filters')
+        filters = self.getSettingsVariable('newsFeed:filters:{}'.format(self.dataVersion))
         if filters:
             return json.loads(filters)
         return {
@@ -108,7 +110,7 @@ class NewsFeedDock(QtWidgets.QDockWidget):
         news = filter(lambda n, filters=filters: self.filterNews(n, filters), news) 
         news = sorted(news, key=lambda k: datetime.strptime(k['data'], '%Y-%m-%d')) 
         for n in news:
-            alreadyRead = self.getSettingsVariable('newsFeed:read:{}'.format(n['id']))
+            alreadyRead = bool(self.getSettingsVariable('newsFeed:read:{}:{}'.format(self.dataVersion, n['id'])))
             if n['imagem']:
                 n['image_url'] = '{}{}'.format(self.api.getServer(), n['imagem']['url'])
                 newsWidget = NewsWithImageWidget(
@@ -134,7 +136,7 @@ class NewsFeedDock(QtWidgets.QDockWidget):
         hasFilterAlreadyRead = filters['Lidas']
         if not( hasFilter or hasFilterAlreadyRead ):
             return False
-        alreadyRead = self.getSettingsVariable('newsFeed:read:{}'.format(news['id']))
+        alreadyRead = self.getSettingsVariable('newsFeed:read:{}:{}'.format(self.dataVersion, news['id']))
         if hasFilterAlreadyRead and not alreadyRead:
             return False
         if not hasFilterAlreadyRead and alreadyRead:
@@ -146,7 +148,7 @@ class NewsFeedDock(QtWidgets.QDockWidget):
         return True
             
     def setAlreadyRead(self, newsId, state):
-        self.setSettingsVariable('newsFeed:read:{}'.format(newsId), state)
+        self.setSettingsVariable('newsFeed:read:{}:{}'.format(self.dataVersion, newsId), state)
         self.fetchData()
 
     def cleanNews(self):
