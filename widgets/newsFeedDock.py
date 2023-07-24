@@ -137,8 +137,8 @@ class NewsFeedDock(QtWidgets.QDockWidget):
         if not( hasFilter or hasFilterAlreadyRead ):
             return False
         alreadyRead = self.getSettingsVariable('newsFeed:read:{}:{}'.format(self.dataVersion, news['id']))
-        if hasFilterAlreadyRead and not alreadyRead:
-            return False
+        # if hasFilterAlreadyRead and not alreadyRead:
+        #     return False
         if not hasFilterAlreadyRead and alreadyRead:
             return False
         if hasFilterAlreadyRead and alreadyRead and not hasFilter:
