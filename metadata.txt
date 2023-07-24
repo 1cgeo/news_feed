@@ -1,0 +1,9 @@
+[general]
+name=News Feed
+description=fornecedor de notícias
+version=0.0.0
+author=1cgeo
+email=
+qgisMinimumVersion=2.0
+qgisMaximumVersion=3.99
+icon=icons/phone.png
